@@ -23,7 +23,7 @@
     "typeorm:migration:generate": "typeorm-ts-node-commonjs migration:generate src/migrations/ -d src/config/typeorm.config.ts",
     "typeorm:migration:run": "typeorm-ts-node-commonjs migration:run -d src/config/typeorm.config.ts",
     "typeorm:migration:revert": "typeorm-ts-node-commonjs migration:revert -d src/config/typeorm.config.ts",
-    "db:create": "node -e \"const { Client } = require('pg'); const client = new Client({ host: 'localhost', port: 5432, user: 'checkinn', password: 'checkinn_secret' }); client.connect().then(() => client.query('CREATE DATABASE IF NOT EXISTS checkinn_db')).then(() => console.log('Database created')).catch(console.error).finally(() => client.end());\""
+    "db:create": "node -e \"const { Client } = require('pg'); const client = new Client({ host: 'localhost', port: 5432, user: 'checkinn', password: 'checkinn_secret' }); client.connect().then(() => client.query('SELECT 1 FROM pg_database WHERE datname = \\'checkinn_db\\'').then(res => res.rowCount === 0 ? client.query('CREATE DATABASE checkinn_db') : null)).then(() => console.log('Database ready')).catch(err => console.log('Database might already exist:', err.message)).finally(() => client.end());\""
   },
   "dependencies": {
     "@nestjs/cache-manager": "^3.1.0",
