@@ -20,3 +20,11 @@ export interface CreateGuestRequest {
   email?: string;
   phone?: string;
 }
+
+export interface UpdateGuestRequest {
+  name?: string;
+  document?: string;
+  documentType?: DocumentType;
+  email?: string;
+  phone?: string;
+}
