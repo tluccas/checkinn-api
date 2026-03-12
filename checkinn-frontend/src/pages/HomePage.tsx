@@ -39,18 +39,18 @@ const features = [
   },
   {
     icon: Shield,
-    title: "Segurança JWT",
-    desc: "Autenticação robusta com tokens JWT em memória. Sem dados sensíveis expostos no navegador.",
+    title: "Segurança",
+    desc: "Autenticação robusta. Sem dados sensíveis expostos.",
   },
   {
     icon: Zap,
-    title: "Cache Redis",
-    desc: "Respostas ultrarrápidas com cache inteligente em Redis. Performance de nível enterprise.",
+    title: "Otimize sua Recepção",
+    desc: "Acelere sua recepção, evite longas filas e realize Check-ins e Checkouts com um clique.",
   },
   {
     icon: Star,
-    title: "API RESTful",
-    desc: "Backend NestJS com arquitetura modular, validação de DTOs e tratamento global de erros.",
+    title: "Qualidade no Suporte",
+    desc: "Aqui trabalhamos com suporte de qualidade, nosso foco é entregar a melhor experiência para Hoteis e seus hóspedes.",
   },
 ];
 
@@ -67,7 +67,7 @@ export default function HomePage() {
       >
         <div className="absolute inset-0 bg-black/70"></div>
         <div className="relative max-w-7xl mx-auto px-6 py-24 md:py-32 w-full flex items-center justify-center">
-          <div className="max-w-2xl flex flex-col items-center">
+          <div className="max-w-2xl flex flex-col items-center text-center">
             <motion.div
               initial="hidden"
               animate="visible"
@@ -96,11 +96,11 @@ export default function HomePage() {
               animate="visible"
               variants={fadeUp}
               custom={2}
-              className="mt-6 text-lg text-white/70 leading-relaxed max-w-xl"
+              className="mt-6 text-lg font-medium text-white/80 leading-relaxed max-w-xl"
             >
-              CheckInn é a plataforma completa para gestão de hotéis, reservas e
-              hóspedes. Construído com NestJS e React para performance e
-              segurança de nível profissional.
+              CheckInn é a plataforma completa para gestão de hotéis. 
+              Construído para otimizar sua recepção e oferecer qualidade no atendimento e
+              gerenciamento eficiente, tudo em um só lugar.
             </motion.p>
 
             <motion.div
