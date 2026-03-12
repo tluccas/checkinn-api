@@ -5,11 +5,11 @@ on:
     paths:
       - "checkinn-api/**"
       - "docker-compose.yml"
-    branches: [main]
+    branches: ["main"]
   pull_request:
     paths:
       - "checkinn-api/**"
-    branches: [main]
+    branches: ["main"]
 
 jobs:
   test-backend:
