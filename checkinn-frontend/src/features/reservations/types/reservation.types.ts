@@ -33,3 +33,17 @@ export interface CreateReservationRequest {
   roomCount?: number;
   notes?: string;
 }
+
+export interface UpdateReservationRequest {
+  checkInDate?: string;
+  checkOutDate?: string;
+  responsibleName?: string;
+  responsibleEmail?: string;
+  responsiblePhone?: string;
+  roomCount?: number;
+  notes?: string;
+}
+
+export interface UpdateReservationStatusRequest {
+  status: ReservationStatus;
+}

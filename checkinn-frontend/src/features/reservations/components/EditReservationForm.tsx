@@ -1,49 +1,45 @@
-import { type SubmitEvent, useEffect, useState } from "react";
+import { type FormEvent, useState } from "react";
 import { Input } from "@/components/common/Input";
-import { Select } from "@/components/common/Select";
 import { Button } from "@/components/common/Button";
 import { useToast } from "@/store/toast.context";
 import { reservationService } from "@/features/reservations/services/reservation.service";
-import { hotelService } from "@/features/hotels/services/hotel.service";
-import type { Reservation } from "@/features/reservations/types/reservation.types";
-import type { Hotel } from "@/features/hotels/types/hotel.types";
+import type {
+  Reservation,
+  UpdateReservationRequest,
+} from "@/features/reservations/types/reservation.types";
 import { ApiError } from "@/services/api";
 
 interface Props {
-  onCreated: (reservation: Reservation) => void;
+  reservation: Reservation;
+  onUpdated: (reservation: Reservation) => void;
   onCancel: () => void;
 }
 
-export function CreateReservationForm({ onCreated, onCancel }: Props) {
+export function EditReservationForm({
+  reservation,
+  onUpdated,
+  onCancel,
+}: Props) {
   const toast = useToast();
   const [loading, setLoading] = useState(false);
-  const [hotels, setHotels] = useState<Hotel[]>([]);
   const [form, setForm] = useState({
-    hotelId: "",
-    checkInDate: "",
-    checkOutDate: "",
-    responsibleName: "",
-    responsibleEmail: "",
-    responsiblePhone: "",
-    roomCount: "1",
-    notes: "",
+    checkInDate: reservation.checkInDate.split("T")[0],
+    checkOutDate: reservation.checkOutDate.split("T")[0],
+    responsibleName: reservation.responsibleName,
+    responsibleEmail: reservation.responsibleEmail || "",
+    responsiblePhone: reservation.responsiblePhone || "",
+    roomCount: String(reservation.roomCount),
+    notes: reservation.notes || "",
   });
 
-  useEffect(() => {
-    hotelService.findAll(1, 100).then((res) => setHotels(res.data));
-  }, []);
+  const set = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    setForm((prev) => ({ ...prev, [field]: e.target.value }));
 
-  const set =
-    (field: string) =>
-    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
-      setForm((prev) => ({ ...prev, [field]: e.target.value }));
-
-  async function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
     try {
-      const reservation = await reservationService.create({
-        hotelId: form.hotelId,
+      const data: UpdateReservationRequest = {
         checkInDate: form.checkInDate,
         checkOutDate: form.checkOutDate,
         responsibleName: form.responsibleName,
@@ -51,33 +47,21 @@ export function CreateReservationForm({ onCreated, onCancel }: Props) {
         responsiblePhone: form.responsiblePhone || undefined,
         roomCount: Number(form.roomCount),
         notes: form.notes || undefined,
-      });
-      toast.success("Reserva criada com sucesso!");
-      onCreated(reservation);
+      };
+      const updated = await reservationService.update(reservation.id, data);
+      toast.success("Reserva atualizada com sucesso!");
+      onUpdated(updated);
     } catch (err) {
       toast.error(
-        err instanceof ApiError ? err.message : "Erro ao criar reserva",
+        err instanceof ApiError ? err.message : "Erro ao atualizar reserva",
       );
     } finally {
       setLoading(false);
     }
   }
 
-  const hotelOptions = hotels.map((h) => ({
-    value: h.id,
-    label: `${h.name} — ${h.city}/${h.state}`,
-  }));
-
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <Select
-        label="Hotel *"
-        options={hotelOptions}
-        placeholder="Selecione um hotel"
-        value={form.hotelId}
-        onChange={set("hotelId")}
-        required
-      />
       <div className="grid grid-cols-2 gap-4">
         <Input
           label="Check-in *"
@@ -96,7 +80,6 @@ export function CreateReservationForm({ onCreated, onCancel }: Props) {
       </div>
       <Input
         label="Responsável *"
-        placeholder="João Silva"
         value={form.responsibleName}
         onChange={set("responsibleName")}
         required
@@ -105,13 +88,11 @@ export function CreateReservationForm({ onCreated, onCancel }: Props) {
         <Input
           label="Email"
           type="email"
-          placeholder="joao@email.com"
           value={form.responsibleEmail}
           onChange={set("responsibleEmail")}
         />
         <Input
           label="Telefone"
-          placeholder="(11) 9999-9999"
           value={form.responsiblePhone}
           onChange={set("responsiblePhone")}
         />
@@ -120,22 +101,16 @@ export function CreateReservationForm({ onCreated, onCancel }: Props) {
         label="Quartos"
         type="number"
         min={1}
-        placeholder="1"
         value={form.roomCount}
         onChange={set("roomCount")}
       />
-      <Input
-        label="Observações"
-        placeholder="Notas adicionais..."
-        value={form.notes}
-        onChange={set("notes")}
-      />
+      <Input label="Observações" value={form.notes} onChange={set("notes")} />
       <div className="flex justify-end gap-3 pt-2">
         <Button type="button" variant="ghost" onClick={onCancel}>
           Cancelar
         </Button>
         <Button type="submit" loading={loading}>
-          Criar Reserva
+          Salvar Alterações
         </Button>
       </div>
     </form>
