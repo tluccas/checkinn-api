@@ -7,11 +7,13 @@ import { Reservation } from './entities/reservation.entity.js';
 import { ReservationStatus } from './enums/status.enum.js';
 import { HotelsService } from '../hotels/hotels.service.js';
 import { Hotel } from '../hotels/entities/hotel.entity.js';
+import { MailService } from '../mail/mail.service.js';
 
 describe('ReservationsService', () => {
   let service: ReservationsService;
   let reservationRepository: jest.Mocked<Partial<Repository<Reservation>>>;
   let hotelsService: jest.Mocked<Partial<HotelsService>>;
+  let mailService: jest.Mocked<Partial<MailService>>;
 
   const mockHotel: Hotel = {
     id: 'hotel-uuid-1',
@@ -56,6 +58,10 @@ describe('ReservationsService', () => {
       remove: jest.fn(),
     };
     hotelsService = { findById: jest.fn().mockResolvedValue(mockHotel) };
+    mailService = {
+      schedulePreCheckinReminder: jest.fn(),
+      scheduleWelcomeEmail: jest.fn(),
+    };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -65,6 +71,7 @@ describe('ReservationsService', () => {
           useValue: reservationRepository,
         },
         { provide: HotelsService, useValue: hotelsService },
+        { provide: MailService, useValue: mailService },
       ],
     }).compile();
 
@@ -91,6 +98,11 @@ describe('ReservationsService', () => {
 
       expect(result.id).toBe('reservation-uuid-1');
       expect(hotelsService.findById).toHaveBeenCalledWith('hotel-uuid-1');
+      expect(mailService.schedulePreCheckinReminder).toHaveBeenCalledWith(
+        mockReservation.responsibleEmail,
+        mockReservation.responsibleName,
+        mockReservation.checkInDate,
+      );
     });
     it('deve lancar BadRequestException quando check-out antes do check-in', async () => {
       await expect(
@@ -158,6 +170,10 @@ describe('ReservationsService', () => {
       });
 
       expect(result.status).toBe(ReservationStatus.CHECKED_IN);
+      expect(mailService.scheduleWelcomeEmail).toHaveBeenCalledWith(
+        checkedIn.responsibleEmail,
+        checkedIn.responsibleName,
+      );
     });
 
     it('deve rejeitar transicao invalida', async () => {
