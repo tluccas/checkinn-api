@@ -1,8 +1,14 @@
-import { Injectable, ConflictException, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  NotFoundException,
+  Logger,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Guest } from './entities/guest.entity.js';
 import { CreateGuestRequestDto } from './dto/create-guest-request.dto.js';
+import { UpdateGuestRequestDto } from './dto/update-guest-request.dto.js';
 import { GuestResponseDto } from './dto/guest-response.dto.js';
 import { ReservationsService } from '../reservations/reservations.service.js';
 
@@ -48,6 +54,60 @@ export class GuestsService {
     });
 
     return guests.map((guest) => this.toResponseDto(guest));
+  }
+
+  async findById(id: string): Promise<GuestResponseDto> {
+    const guest = await this.guestRepository.findOne({ where: { id } });
+
+    if (!guest) {
+      throw new NotFoundException(`Hóspede com ID ${id} não encontrado`);
+    }
+
+    return this.toResponseDto(guest);
+  }
+
+  async update(
+    id: string,
+    dto: UpdateGuestRequestDto,
+  ): Promise<GuestResponseDto> {
+    const guest = await this.guestRepository.findOne({ where: { id } });
+
+    if (!guest) {
+      throw new NotFoundException(`Hóspede com ID ${id} não encontrado`);
+    }
+
+    // Se está atualizando o documento, verifica duplicidade na mesma reserva
+    if (dto.document && dto.document !== guest.document) {
+      const duplicate = await this.guestRepository.findOne({
+        where: {
+          document: dto.document,
+          reservationId: guest.reservationId,
+        },
+      });
+
+      if (duplicate && duplicate.id !== id) {
+        throw new ConflictException(
+          'Já existe um hóspede com este documento nesta reserva',
+        );
+      }
+    }
+
+    Object.assign(guest, dto);
+    const saved = await this.guestRepository.save(guest);
+    this.logger.log(`Hóspede atualizado: ${saved.name} (${saved.id})`);
+
+    return this.toResponseDto(saved);
+  }
+
+  async remove(id: string): Promise<void> {
+    const guest = await this.guestRepository.findOne({ where: { id } });
+
+    if (!guest) {
+      throw new NotFoundException(`Hóspede com ID ${id} não encontrado`);
+    }
+
+    await this.guestRepository.remove(guest);
+    this.logger.log(`Hóspede removido: ${guest.name} (${id})`);
   }
 
   private toResponseDto(guest: Guest): GuestResponseDto {
