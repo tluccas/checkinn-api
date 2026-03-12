@@ -190,3 +190,14 @@ O frontend foi desenvolvido utilizando **React** com **Vite**, priorizando veloc
 - UI trabalhada insiprando-se na identidade visual da Economy Software.
 
 ## ☕ Preview do Sistema
+<img width="1366" height="1986" alt="home" src="https://github.com/user-attachments/assets/4056b175-17d8-4cb7-af2a-46e20396af1e" />
+<img width="1366" height="690" alt="dashboard1" src="https://github.com/user-attachments/assets/1387ddc3-ab72-401c-b969-988662a49119" />
+<img width="1366" height="620" alt="hoteis" src="https://github.com/user-attachments/assets/0a595d37-235b-4e7b-a3ce-c9eb00a25ae4" />
+<img width="1366" height="620" alt="reservas" src="https://github.com/user-attachments/assets/6fb8585b-e5c2-4e5e-8ecb-265fcc3d758e" />
+<img width="1366" height="620" alt="reserva-modal" src="https://github.com/user-attachments/assets/2e2c0452-025e-4891-838c-fa5a514df7df" />
+
+
+
+
+
+
