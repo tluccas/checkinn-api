@@ -2,13 +2,8 @@ name: Backend CI - Unit Tests
 
 on:
   push:
-    paths:
-      - "checkinn-api/**"
-      - "docker-compose.yml"
     branches: ["main"]
   pull_request:
-    paths:
-      - "checkinn-api/**"
     branches: ["main"]
 
 jobs:
